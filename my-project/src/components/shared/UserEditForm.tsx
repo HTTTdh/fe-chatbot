@@ -35,10 +35,9 @@ import { toast } from "react-toastify";
 const getFormSchema = (mode: "create" | "edit") => {
   return z
     .object({
-      // SỬA LẠI CHỖ NÀY
       username:
         mode === "create"
-          ? z // Bắt buộc khi 'create'
+          ? z
               .string()
               .min(3, "Tên đăng nhập phải có ít nhất 3 ký tự.")
               .regex(
@@ -54,7 +53,6 @@ const getFormSchema = (mode: "create" | "edit") => {
       password_confirmation: z.string().optional(),
     })
     .superRefine((data, ctx) => {
-      // (Logic validation mật khẩu giữ nguyên)
       const { password, password_confirmation } = data;
 
       if (mode === "create") {
@@ -122,7 +120,6 @@ export function UserForm({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    // --- 2. Cập nhật Default Values ---
     defaultValues: {
       username: user?.username || "",
       full_name: user?.full_name || "",
@@ -156,7 +153,7 @@ export function UserForm({
         full_name: data.full_name,
         email: data.email,
         role: data.role,
-        company_id: auth?.user.company_id, // Thêm company_id ở đây là ĐÚNG
+        company_id: auth?.company_id,
       };
       if (data.username) {
         saveData.username = data.username;

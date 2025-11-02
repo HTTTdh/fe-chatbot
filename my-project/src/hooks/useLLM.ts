@@ -8,10 +8,10 @@ import {
   updateLLMKey,
   deleteLLMKey,
 } from "@/services/llmService";
-import type { LLM, LLMResponse, LLMKeyResponse } from "@/types/llm";
+import type { LLM, LLMData, LLMKeyData } from "@/types/llm";
 
 export const useLLM = () => {
-  const [llmConfig, setLlmConfig] = useState<LLMResponse | null>(null);
+  const [llmConfig, setLlmConfig] = useState<LLMData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,7 +37,6 @@ export const useLLM = () => {
     }
   }, []);
 
-  // Create or update LLM configuration
   const saveConfiguration = useCallback(
     async (data: {
       chatbotName: string;
@@ -60,7 +59,7 @@ export const useLLM = () => {
           company_id: data.companyId || "1",
         };
 
-        let updatedLLM: LLMResponse;
+        let updatedLLM: LLMData;
 
         if (llmConfig) {
           // Update existing configuration
@@ -69,7 +68,6 @@ export const useLLM = () => {
           // Create new configuration
           updatedLLM = await createLLM(llmData);
         }
-
         // Reload with keys
         const llmWithKeys = await getLLMById(updatedLLM.id);
         setLlmConfig(llmWithKeys);
@@ -87,7 +85,6 @@ export const useLLM = () => {
     [llmConfig]
   );
 
-  // Add or update LLM key
   const saveKey = useCallback(
     async (keyData: {
       name: string;
@@ -113,7 +110,7 @@ export const useLLM = () => {
           throw new Error("No LLM detail found to add key to");
         }
 
-        let savedKey: LLMKeyResponse;
+        let savedKey: LLMKeyData;
 
         if (keyId) {
           // Update existing key
@@ -122,7 +119,6 @@ export const useLLM = () => {
           // Create new key - sử dụng targetDetailId thay vì llmConfig.id
           savedKey = await createLLMKey(targetDetailId, keyPayload);
         }
-
         // Reload configuration with updated keys
         const updatedLLM = await getLLMById(llmConfig.id);
         setLlmConfig(updatedLLM);
@@ -152,7 +148,9 @@ export const useLLM = () => {
         // Tìm llm_detail_id của key để xóa
         let llmDetailId: number | undefined;
         for (const detail of llmConfig.llm_details) {
-          const keyExists = detail.llm_keys?.find((key) => key.id === keyId);
+          const keyExists = detail.llm_keys?.find(
+            (key: LLMKeyData) => key.id === keyId
+          );
           if (keyExists) {
             llmDetailId = detail.id;
             break;
@@ -164,7 +162,6 @@ export const useLLM = () => {
         }
 
         await deleteLLMKey(llmDetailId, keyId);
-
         // Reload configuration with updated keys
         const updatedLLM = await getLLMById(llmConfig.id);
         setLlmConfig(updatedLLM);
@@ -177,15 +174,13 @@ export const useLLM = () => {
     },
     [llmConfig]
   );
-  console.log("llmConfig in useLLM:", llmConfig);
-  // Get keys by type from llm_details
   const getKeysByType = useCallback(
     (type: "bot" | "embedding") => {
       if (!llmConfig || !llmConfig.llm_details) return [];
 
       // Flatten all keys from all llm_details
-      const allKeys: LLMKeyResponse[] = [];
-      llmConfig.llm_details.forEach((detail) => {
+      const allKeys: LLMKeyData[] = [];
+      llmConfig.llm_details.forEach((detail: any) => {
         if (detail.llm_keys) {
           allKeys.push(...detail.llm_keys);
         }

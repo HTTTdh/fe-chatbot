@@ -1,11 +1,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
+import { NavigationMenu } from "@/components/ui/navigation-menu";
 import {
   Popover,
   PopoverContent,
