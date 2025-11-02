@@ -21,11 +21,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./Frontend
+        working-directory: ./my-project
 
       - name: Build project
         run: npm run build
-        working-directory: ./Frontend
+        working-directory: ./my-project
 
       - name: Deploy to branch
         run: |
