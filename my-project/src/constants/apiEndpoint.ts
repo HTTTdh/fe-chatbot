@@ -99,16 +99,16 @@ export const API_ENDPOINT = {
       return `/llms/${llm_id}`;
     },
     CREATE_KEY(llm_id: number) {
-      return `/llms/${llm_id}/keys`;
+      return `/llms/details/${llm_id}/keys`;
     },
     GET_KEYS(llm_id: number) {
-      return `/llms/${llm_id}/keys`;
+      return `/llms/details/${llm_id}/keys`;
     },
     UPDATE_KEY(llm_id: number, key_id: number) {
-      return `/llms/${llm_id}/keys/${key_id}`;
+      return `/llms/details/${llm_id}/keys/${key_id}`;
     },
     DELETE_KEY(llm_id: number, key_id: number) {
-      return `/llms/${llm_id}/keys/${key_id}`;
+      return `/llms/details/${llm_id}/keys/${key_id}`;
     },
   },
   TELEGRAM: {

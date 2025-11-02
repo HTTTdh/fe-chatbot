@@ -42,3 +42,37 @@ body,
 .read-the-docs {
   color: #888;
 }
+
+/* --- Tùy chỉnh thanh cuộn cho toàn bộ ứng dụng --- */
+/* Áp dụng cho các trình duyệt WebKit (Chrome, Safari, Edge mới) */
+
+/* Toàn bộ thanh cuộn */
+::-webkit-scrollbar {
+  width: 8px; /* Độ rộng thanh cuộn (cho cuộn dọc) */
+  height: 8px; /* Chiều cao thanh cuộn (cho cuộn ngang) */
+}
+
+/* Rãnh cuộn (nền của thanh cuộn) */
+::-webkit-scrollbar-track {
+  background: transparent; /* Nền trong suốt (hoặc màu nền của bạn, vd: #09090b) */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  /* SỬA Ở ĐÂY: 
+    Đổi từ #52525b (quá đậm) sang #a1a1aa (sáng hơn) 
+  */
+  background-color: #a1a1aa; /* Đây là màu zinc-400 */
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Khi di chuột vào con chạy */
+::-webkit-scrollbar-thumb:hover {
+  /* SỬA Ở ĐÂY: 
+    Đổi từ #71717a (zinc-500) thành #71717a (vẫn là zinc-500, nhưng giờ nó là màu đậm hơn)
+    Hoặc bạn có thể dùng #52525b (zinc-600) nếu muốn nó rõ hơn khi hover
+  */
+  background-color: #71717a; /* Đây là màu zinc-500 */
+}

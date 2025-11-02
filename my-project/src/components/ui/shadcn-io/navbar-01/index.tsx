@@ -12,41 +12,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
-// Simple logo component for the navbar
-const Logo = (props: React.SVGAttributes<SVGElement>) => {
+import { useLocation } from "react-router-dom";
+const Logo = (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
   return (
-    <svg
-      width="1em"
-      height="1em"
-      viewBox="0 0 324 323"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
+    <img
+      className="w-20 h-16"
+      src="/logo.png"
+      alt="Public Administration Chatbot Logo"
       {...props}
-    >
-      <rect
-        x="88.1023"
-        y="144.792"
-        width="151.802"
-        height="36.5788"
-        rx="18.2894"
-        transform="rotate(-38.5799 88.1023 144.792)"
-        fill="currentColor"
-      />
-      <rect
-        x="85.3459"
-        y="244.537"
-        width="151.802"
-        height="36.5788"
-        rx="18.2894"
-        transform="rotate(-38.5799 85.3459 244.537)"
-        fill="currentColor"
-      />
-    </svg>
+    />
   );
 };
-
-// Hamburger icon component
 const HamburgerIcon = ({
   className,
   ...props
@@ -98,31 +74,45 @@ export interface Navbar01Props extends React.HTMLAttributes<HTMLElement> {
   onCtaClick?: () => void;
 }
 
-// Default navigation links
-const defaultNavigationLinks: Navbar01NavLink[] = [
-  { href: "#", label: "Home", active: true },
-  { href: "#features", label: "Features" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#about", label: "About" },
-];
+const pathToNavigationLinks = (pathname: string): Navbar01NavLink[] => {
+  const pathSegments = pathname
+    .split("/")
+    .filter((segment) => segment.length > 0);
+  if (pathSegments.length === 0) {
+    return [{ href: "/", label: "Trang chủ", active: true }];
+  }
+  const lastSegment = pathSegments[pathSegments.length - 1];
+  const label = lastSegment
+    .split(/[-_]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Viết hoa chữ cái đầu mỗi từ
+    .join(" ");
 
+  return [
+    {
+      href: pathname, // Dùng đường dẫn đầy đủ
+      label: label,
+      active: true,
+    },
+  ];
+};
 export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
   (
     {
       className,
-      logo = <Logo />,
-      logoHref = "#",
-      navigationLinks = defaultNavigationLinks,
-      signInText = "Sign In",
+      logo,
+      signInText = "Xin chào, ",
       signInHref = "#signin",
-      ctaText = "Get Started",
-      ctaHref = "#get-started",
+      ctaText,
+      ctaHref,
       onSignInClick,
       onCtaClick,
       ...props
     },
     ref
   ) => {
+    const location = useLocation();
+    const currentPathname = location.pathname;
+    const currentNavigationLinks = pathToNavigationLinks(currentPathname);
     const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef<HTMLElement>(null);
 
@@ -169,9 +159,7 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
         {...props}
       >
         <div className="container mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-4">
-          {/* Left side */}
           <div className="flex items-center gap-2">
-            {/* Mobile menu trigger */}
             {isMobile && (
               <Popover>
                 <PopoverTrigger asChild>
@@ -185,23 +173,9 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
                 </PopoverTrigger>
                 <PopoverContent align="start" className="w-48 p-2">
                   <NavigationMenu className="max-w-none">
-                    <NavigationMenuList className="flex-col items-start gap-1">
-                      {navigationLinks.map((link, index) => (
-                        <NavigationMenuItem key={index} className="w-full">
-                          <button
-                            onClick={(e) => e.preventDefault()}
-                            className={cn(
-                              "flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer no-underline",
-                              link.active
-                                ? "bg-accent text-accent-foreground"
-                                : "text-foreground/80"
-                            )}
-                          >
-                            {link.label}
-                          </button>
-                        </NavigationMenuItem>
-                      ))}
-                    </NavigationMenuList>
+                    <h1 className="text-md font-semibold text-foreground">
+                      {currentNavigationLinks[0]?.label || "Trang"}
+                    </h1>
                   </NavigationMenu>
                 </PopoverContent>
               </Popover>
@@ -214,31 +188,15 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
               >
                 <div className="text-2xl">{logo}</div>
                 <span className="hidden font-bold text-xl sm:inline-block">
-                  shadcn.io
+                  Chatbot hành chính công
                 </span>
               </button>
               {/* Navigation menu */}
-              {!isMobile && (
-                <NavigationMenu className="flex">
-                  <NavigationMenuList className="gap-1">
-                    {navigationLinks.map((link, index) => (
-                      <NavigationMenuItem key={index}>
-                        <button
-                          onClick={(e) => e.preventDefault()}
-                          className={cn(
-                            "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer no-underline",
-                            link.active
-                              ? "bg-accent text-accent-foreground"
-                              : "text-foreground/80 hover:text-foreground"
-                          )}
-                        >
-                          {link.label}
-                        </button>
-                      </NavigationMenuItem>
-                    ))}
-                  </NavigationMenuList>
-                </NavigationMenu>
-              )}
+              {/* {!isMobile && (
+                <h1 className="text-lg font-semibold text-foreground">
+                  {currentNavigationLinks[0]?.label || "Trang"}
+                </h1>
+              )} */}
             </div>
           </div>
           {/* Right side */}

@@ -3,6 +3,7 @@ import axios from "axios";
 // create an axios instance
 const axiosClient = axios.create({
   baseURL: "http://localhost:8000",
+  withCredentials: true,
 });
 
 // Add a request interceptor

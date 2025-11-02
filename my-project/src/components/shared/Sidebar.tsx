@@ -1,15 +1,13 @@
 import {
-  ChevronUp,
   BookUser,
   MessageSquare,
-  Database,
   Settings,
   Home,
   PackageIcon,
   User2Icon,
   BookAlert,
   ChartBar,
-  User2,
+  LogOut,
 } from "lucide-react";
 import {
   Sidebar,
@@ -22,109 +20,172 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { Logo } from "../ui/shadcn-io/navbar-01";
+import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-// Menu items.
 const items = [
   {
     title: "Trang quản lý",
     icon: Home,
-    url: "/dashboard",
+    url: "/trang-chu",
+    roles: ["root", "superadmin", "admin", "user"], // Tất cả roles
   },
   {
     title: "Cấu hình hệ thống",
     icon: Settings,
     url: "/cau-hinh-he-thong",
+    roles: ["root", "superadmin"], // Chỉ root và superadmin
   },
   {
     title: "Quản lý người dùng",
     icon: User2Icon,
     url: "/quan-ly-nguoi-dung",
+    roles: ["root", "superadmin", "admin"], // root, superadmin, admin
   },
   {
     title: "Dữ liệu Chatbot",
     icon: BookUser,
     url: "/du-lieu-chatbot",
+    roles: ["root", "superadmin", "admin"], // root, superadmin, admin
   },
   {
     title: "Quản lý kênh",
     icon: PackageIcon,
-    url: "/admin/facebook_page",
-  },
-  {
-    title: "Dữ liệu khách hàng",
-    icon: Database,
-    url: "/dashboard/export",
+    url: "/quan-ly-kenh",
+    roles: ["root", "superadmin", "admin"], // root, superadmin, admin
   },
   {
     title: "Chat Interface",
     icon: MessageSquare,
-    url: "/admin/chat",
+    url: "/quan-ly-chat",
+    roles: ["root", "superadmin", "admin", "user"], // Tất cả roles
   },
   {
     title: "Thống kê hoạt động",
     icon: ChartBar,
-    url: "/admin/admin-analytics",
+    url: "/thong-ke-hoat-dong",
+    roles: ["root", "superadmin", "admin"], // root, superadmin, admin
   },
   {
     title: "Hướng dẫn sử dụng",
     icon: BookAlert,
-    url: "/admin/dashboard-guide",
+    url: "/huong-dan-su-dung",
+    roles: ["root", "superadmin", "admin", "user"], // Tất cả roles
   },
 ];
 
 export function AppSidebar() {
+  const { logoutUser, user } = useAuth();
+  const navigate = useNavigate();
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+
+  const handleLogout = () => {
+    logoutUser();
+    setIsLogoutDialogOpen(false);
+    navigate("/"); // Chuyển hướng về trang chủ
+  };
+
+  // Lọc menu items theo role của user
+  const filteredItems = items.filter(
+    (item) => user && item.roles.includes(user.role)
+  );
+
   return (
-    <Sidebar>
-      <SidebarHeader>Chatbot Hành Chính Công</SidebarHeader>
-      <SidebarContent>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {items.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <User2 /> Username
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Billing</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+    <TooltipProvider>
+      <Sidebar collapsible="icon">
+        <SidebarHeader className="border-b-2 flex items-center p-3">
+          <Logo />
+
+          <span
+            className={cn(
+              "font-semibold text-lg ml-3 whitespace-nowrap transition-opacity duration-200",
+              "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden",
+              "group-data-[state=collapsed]:group-hover:opacity-100 group-data-[state=collapsed]:group-hover:flex"
+            )}
+          >
+            Chatbot Hành Chính Công
+          </span>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filteredItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url} className="flex items-center gap-3">
+                      <item.icon />
+                      <span
+                        className={cn(
+                          "whitespace-nowrap transition-opacity duration-200",
+                          "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden",
+                          "group-data-[state=collapsed]:group-hover:opacity-100 group-data-[state=collapsed]:group-hover:flex"
+                        )}
+                      >
+                        {item.title}
+                      </span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarContent>
+        <SidebarFooter>
+          <Dialog
+            open={isLogoutDialogOpen}
+            onOpenChange={setIsLogoutDialogOpen}
+          >
+            <DialogTrigger asChild>
+              <SidebarMenuButton className="w-full">
+                <div className="flex items-center gap-3">
+                  <LogOut className="h-5 w-5" />
+                  <span
+                    className={cn(
+                      "whitespace-nowrap transition-opacity duration-200",
+                      "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden",
+                      "group-data-[state=collapsed]:group-hover:opacity-100 group-data-[state=collapsed]:group-hover:flex"
+                    )}
+                  >
+                    Đăng xuất
+                  </span>
+                </div>
+              </SidebarMenuButton>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Xác nhận đăng xuất</DialogTitle>
+                <DialogDescription>
+                  Bạn có chắc chắn muốn đăng xuất khỏi hệ thống không?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsLogoutDialogOpen(false)}
+                >
+                  Hủy
+                </Button>
+                <Button variant="destructive" onClick={handleLogout}>
+                  Đăng xuất
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </SidebarFooter>
+      </Sidebar>
+    </TooltipProvider>
   );
 }
