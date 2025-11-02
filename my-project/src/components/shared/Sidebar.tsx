@@ -95,25 +95,24 @@ export function AppSidebar() {
   const handleLogout = () => {
     logoutUser();
     setIsLogoutDialogOpen(false);
-    navigate("/"); // Chuyển hướng về trang chủ
+    navigate("/");
   };
 
-  // Lọc menu items theo role của user
   const filteredItems = items.filter(
     (item) => user && item.roles.includes(user.role)
   );
 
   return (
     <TooltipProvider>
-      <Sidebar collapsible="icon">
+      <Sidebar collapsible="icon" variant="sidebar">
         <SidebarHeader className="border-b-2 flex items-center p-3">
           <Logo />
 
           <span
             className={cn(
               "font-semibold text-lg ml-3 whitespace-nowrap transition-opacity duration-200",
-              "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden",
-              "group-data-[state=collapsed]:group-hover:opacity-100 group-data-[state=collapsed]:group-hover:flex"
+              "group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:hidden",
+              "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden"
             )}
           >
             Chatbot Hành Chính Công
@@ -130,8 +129,8 @@ export function AppSidebar() {
                       <span
                         className={cn(
                           "whitespace-nowrap transition-opacity duration-200",
-                          "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden",
-                          "group-data-[state=collapsed]:group-hover:opacity-100 group-data-[state=collapsed]:group-hover:flex"
+                          "group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:hidden",
+                          "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden"
                         )}
                       >
                         {item.title}
@@ -155,8 +154,8 @@ export function AppSidebar() {
                   <span
                     className={cn(
                       "whitespace-nowrap transition-opacity duration-200",
-                      "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden",
-                      "group-data-[state=collapsed]:group-hover:opacity-100 group-data-[state=collapsed]:group-hover:flex"
+                      "group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:hidden",
+                      "group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:hidden"
                     )}
                   >
                     Đăng xuất

@@ -191,12 +191,6 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
                   Chatbot hành chính công
                 </span>
               </button>
-              {/* Navigation menu */}
-              {/* {!isMobile && (
-                <h1 className="text-lg font-semibold text-foreground">
-                  {currentNavigationLinks[0]?.label || "Trang"}
-                </h1>
-              )} */}
             </div>
           </div>
           {/* Right side */}

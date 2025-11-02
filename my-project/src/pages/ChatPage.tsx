@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,24 +18,27 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-
-// Import icons từ lucide-react
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Search,
   Paperclip,
   SendHorizontal,
   Archive,
   Loader2,
+  ArrowLeft,
+  PanelRight,
 } from "lucide-react";
 
-// --- IMPORT TỪ LOGIC VÀ COMPONENT ĐÃ TÁCH ---
 import { useAdminChat } from "@/hooks/useAdminChat";
 import { SessionItem, MessageItem } from "@/components/shared/ChatComponents";
 
-// --- COMPONENT CHÍNH: TRANG CHAT ADMIN ---
-
 export default function ChatPage() {
-  // Chỉ một dòng này để lấy TOÀN BỘ logic!
   const {
     isLoadingSessions,
     isLoadingMessages,
@@ -52,12 +56,73 @@ export default function ChatPage() {
     messagesEndRef,
   } = useAdminChat();
 
+  const [isInfoSheetOpen, setIsInfoSheetOpen] = useState(false);
+
+  const handleSelectSessionResponsive = (sessionId: string) => {
+    handleSelectSession(sessionId);
+  };
+
+  const handleBackToSessions = () => {
+    handleSelectSession(null as unknown as string);
+  };
+
+  const InfoColumnContent = () => (
+    <div className="flex flex-col gap-4 p-4 lg:p-0">
+      <Card>
+        <CardHeader>
+          <CardTitle>Thông tin phiên hỗ trợ</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Cán bộ xử lý</Label>
+            <Select defaultValue="nguyen-van-a" disabled={!currentSessionId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn cán bộ" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="chua-gan">Chưa gán</SelectItem>
+                <SelectItem value="nguyen-van-a">Nguyễn Văn A</SelectItem>
+                <SelectItem value="tran-thi-b">Trần Thị B</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Hồ sơ liên quan</CardTitle>
+          <CardDescription>
+            Liên kết với hồ sơ trên Cổng Dịch vụ công.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="ma-ho-so">Mã hồ sơ</Label>
+            <Input
+              id="ma-ho-so"
+              placeholder="Nhập mã hồ sơ..."
+              disabled={!currentSessionId}
+            />
+          </div>
+          <Button className="w-full" disabled={!currentSessionId}>
+            Tìm kiếm hồ sơ
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   return (
     <div className="flex h-screen w-full flex-col bg-background">
-      {/* THAY THẾ ResizablePanelGroup bằng <div> với flex-row */}
-      <div className="flex h-full w-full flex-row">
-        {/* === CỘT 1: DANH SÁCH PHIÊN CHAT (Width cố định) === */}
-        <div className="flex h-full w-[300px] flex-shrink-0 flex-col border-r">
+      <div className="flex h-full w-full flex-row overflow-hidden">
+        <div
+          className={`
+            ${currentSessionId ? "hidden" : "flex w-full"}
+            h-full flex-shrink-0 flex-col border-r
+            md:flex md:w-[300px]
+          `}
+        >
           <div className="flex h-full flex-col">
             <div className="p-3">
               <h2 className="text-lg font-semibold">Phiên chat</h2>
@@ -71,7 +136,6 @@ export default function ChatPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            {/* THAY THẾ ScrollArea bằng <div overflow-y-auto> */}
             <div className="flex-1 overflow-y-auto px-2">
               <div className="flex flex-col gap-1">
                 {isLoadingSessions ? (
@@ -85,7 +149,7 @@ export default function ChatPage() {
                       session={session}
                       isActive={session.chat_session_id === currentSessionId}
                       onClick={() =>
-                        handleSelectSession(session.chat_session_id)
+                        handleSelectSessionResponsive(session.chat_session_id)
                       }
                     />
                   ))
@@ -95,33 +159,64 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* === CỘT 2: NỘI DUNG CHAT (Width linh hoạt) === */}
-        <div className="flex h-full flex-1 flex-col">
+        <div
+          className={`
+            ${currentSessionId ? "flex w-full" : "hidden"}
+            h-full flex-1 flex-col
+            md:flex
+          `}
+        >
           <div className="flex h-full flex-col">
-            {/* Header của cột chat */}
             <div className="flex h-14 items-center justify-between border-b p-3">
-              <h3 className="text-lg font-semibold">
-                {currentSessionInfo
-                  ? `Phiên: ${
-                      currentSessionInfo.customer_name ||
-                      currentSessionInfo.chat_session_id.slice(0, 8)
-                    }`
-                  : "Chọn một phiên chat"}
-              </h3>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden"
+                  onClick={handleBackToSessions}
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <h3 className="text-lg font-semibold">
+                  {currentSessionInfo
+                    ? `Phiên: ${
+                        currentSessionInfo.customer_name ||
+                        currentSessionInfo.chat_session_id.slice(0, 8)
+                      }`
+                    : "Chọn một phiên chat"}
+                </h3>
+              </div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="default"
                   size="sm"
                   disabled={!currentSessionId}
+                  className="hidden sm:flex"
                 >
                   <Archive className="mr-2 h-4 w-4" />
                   Thủ công
                 </Button>
+
+                <Sheet open={isInfoSheetOpen} onOpenChange={setIsInfoSheetOpen}>
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="lg:hidden"
+                      disabled={!currentSessionId}
+                    >
+                      <PanelRight className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent className="w-full sm:w-[380px] p-0 overflow-y-auto">
+                    <SheetHeader className="p-4">
+                      <SheetTitle>Thông tin chi tiết</SheetTitle>
+                    </SheetHeader>
+                    <InfoColumnContent />
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
-
-            {/* Khu vực hiển thị tin nhắn */}
-            {/* THAY THẾ ScrollArea bằng <div overflow-y-auto> */}
             <div className="flex-1 overflow-y-auto p-4">
               <div className="flex flex-col gap-4">
                 {isLoadingMessages ? (
@@ -132,7 +227,7 @@ export default function ChatPage() {
                     </span>
                   </div>
                 ) : !currentSessionId ? (
-                  <div className="text-center text-muted-foreground p-8">
+                  <div className="text-center text-muted-foreground p-8 md:hidden">
                     Vui lòng chọn một phiên chat từ danh sách bên trái.
                   </div>
                 ) : (
@@ -140,14 +235,12 @@ export default function ChatPage() {
                     <MessageItem key={msg.id || index} msg={msg} />
                   ))
                 )}
-                {/* Ref này vẫn dùng để cuộn xuống cuối */}
                 <div ref={messagesEndRef} />
               </div>
             </div>
 
             <Separator />
 
-            {/* Khu vực nhập liệu (Giữ nguyên) */}
             <div className="p-4">
               <div className="relative">
                 <Textarea
@@ -181,61 +274,9 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* === CỘT 3: THÔNG TIN HỖ TRỢ (Width cố định) === */}
-        <div className="flex h-full w-[350px] flex-shrink-0 flex-col border-l">
-          {/* THAY THẾ ScrollArea bằng <div overflow-y-auto> */}
-          <div className="h-full overflow-y-auto p-4">
-            <div className="flex flex-col gap-4">
-              {/* Card: Thông tin phiên */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Thông tin phiên hỗ trợ</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Cán bộ xử lý</Label>
-                    <Select
-                      defaultValue="nguyen-van-a"
-                      disabled={!currentSessionId}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn cán bộ" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="chua-gan">Chưa gán</SelectItem>
-                        <SelectItem value="nguyen-van-a">
-                          Nguyễn Văn A
-                        </SelectItem>
-                        <SelectItem value="tran-thi-b">Trần Thị B</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Card: Hồ sơ liên quan */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Hồ sơ liên quan</CardTitle>
-                  <CardDescription>
-                    Liên kết với hồ sơ trên Cổng Dịch vụ công.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="ma-ho-so">Mã hồ sơ</Label>
-                    <Input
-                      id="ma-ho-so"
-                      placeholder="Nhập mã hồ sơ..."
-                      disabled={!currentSessionId}
-                    />
-                  </div>
-                  <Button className="w-full" disabled={!currentSessionId}>
-                    Tìm kiếm hồ sơ
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+        <div className="hidden h-full w-[350px] flex-shrink-0 flex-col border-l lg:flex">
+          <div className="h-full overflow-y-auto">
+            <InfoColumnContent />
           </div>
         </div>
       </div>

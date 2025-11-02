@@ -71,7 +71,6 @@ export function SettingsTabs() {
 
   const { success, error: showError, toasts, removeToast } = useToast();
 
-  // Local state for form
   const [chatbotName, setChatbotName] = useState("");
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [prompt, setPrompt] = useState("");
@@ -81,7 +80,6 @@ export function SettingsTabs() {
   >([]);
   const [showAiKeySection, setShowAiKeySection] = useState(false);
 
-  // Dialog state for confirmation
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
     keyId: number | null;
@@ -92,11 +90,9 @@ export function SettingsTabs() {
     keyIndex: 0,
   });
 
-  // Model selection state
   const [selectedBotModel, setSelectedBotModel] = useState("");
   const [selectedEmbeddingModel, setSelectedEmbeddingModel] = useState("");
 
-  // Create model options from llm_details
   const getModelOptions = () => {
     if (!llmConfig?.llm_details) return [];
     return llmConfig.llm_details.map((detail) => ({
@@ -106,7 +102,6 @@ export function SettingsTabs() {
     }));
   };
 
-  // Get model name by id
   const getModelNameById = (modelId: number) => {
     const model = llmConfig?.llm_details.find(
       (detail) => detail.id === modelId
@@ -114,7 +109,6 @@ export function SettingsTabs() {
     return model ? model.name.toLowerCase() : "";
   };
 
-  // Get model id by name
   const getModelIdByName = (modelName: string) => {
     const model = llmConfig?.llm_details.find(
       (detail) => detail.name.toLowerCase() === modelName.toLowerCase()
@@ -122,26 +116,22 @@ export function SettingsTabs() {
     return model ? model.id : undefined;
   };
 
-  // Initialize form data when llmConfig loads
   useEffect(() => {
     if (llmConfig) {
       setChatbotName(llmConfig.botName || "");
       setWelcomeMessage(llmConfig.system_greeting || "");
       setPrompt(llmConfig.prompt || "");
 
-      // Set selected models based on current config
       setSelectedBotModel(getModelNameById(llmConfig.bot_model_detail_id));
       setSelectedEmbeddingModel(
         getModelNameById(llmConfig.embedding_model_detail_id)
       );
 
-      // Load embedding key
       const embeddingKeys = getKeysByType("embedding");
       if (embeddingKeys.length > 0) {
         setEmbeddingKey(embeddingKeys[0].key);
       }
 
-      // Load AI keys
       const botKeys = getKeysByType("bot");
       if (botKeys.length > 0) {
         setShowAiKeySection(true);
@@ -156,14 +146,12 @@ export function SettingsTabs() {
     }
   }, [llmConfig, getKeysByType]);
 
-  // Handle embedding key save
   const handleSaveEmbeddingKey = async () => {
     if (!embeddingKey.trim()) return;
 
     try {
       const existingEmbeddingKeys = getKeysByType("embedding");
 
-      // Tìm llm_detail phù hợp cho embedding key
       const embeddingDetailId =
         getModelIdByName(selectedEmbeddingModel) ||
         llmConfig?.embedding_model_detail_id ||
@@ -190,10 +178,8 @@ export function SettingsTabs() {
     }
   };
 
-  // Handle AI keys save
   const handleSaveAiKeys = async () => {
     try {
-      // Tìm llm_detail phù hợp cho bot key
       const botDetailId =
         getModelIdByName(selectedBotModel) ||
         llmConfig?.bot_model_detail_id ||
@@ -220,13 +206,12 @@ export function SettingsTabs() {
     }
   };
 
-  // Handle chatbot info save
   const handleSaveChatbotInfo = async () => {
     try {
       await saveConfiguration({
         chatbotName,
         welcomeMessage,
-        prompt: prompt || "", // Use current prompt or empty string
+        prompt: prompt || "",
         botModelDetailId: getModelIdByName(selectedBotModel)?.toString(),
         embeddingModelDetailId: getModelIdByName(
           selectedEmbeddingModel
@@ -241,7 +226,6 @@ export function SettingsTabs() {
     }
   };
 
-  // Handle prompt save
   const handleSavePrompt = async () => {
     try {
       await saveConfiguration({
@@ -303,7 +287,6 @@ export function SettingsTabs() {
 
     const keyToRemove = aiKeys.find((key) => key.id === deleteDialog.keyId);
 
-    // If key exists in database, delete it
     if (keyToRemove?.keyId) {
       try {
         await deleteKey(keyToRemove.keyId);
@@ -318,7 +301,6 @@ export function SettingsTabs() {
       }
     }
 
-    // Remove from local state
     setAiKeys((currentKeys) =>
       currentKeys.filter((key) => key.id !== deleteDialog.keyId)
     );
@@ -327,24 +309,40 @@ export function SettingsTabs() {
 
   return (
     <>
-      <div className="flex w-full flex-col gap-6">
+      <div className="flex w-full flex-col gap-4 sm:gap-6">
         {error && (
-          <div className="flex items-center gap-2 p-4 border border-red-200 bg-red-50 rounded-lg">
-            <AlertCircle className="h-5 w-5 text-red-500" />
-            <span className="text-red-700">{error}</span>
+          <div className="flex items-center gap-2 p-3 sm:p-4 border border-red-200 bg-red-50 rounded-lg">
+            <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
+            <span className="text-red-700 text-sm sm:text-base">{error}</span>
           </div>
         )}
 
         <Tabs defaultValue="configEmbedding" className="w-full">
-          <TabsList>
-            <TabsTrigger value="configEmbedding">
-              Cấu hình key embedding
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto">
+            <TabsTrigger
+              value="configEmbedding"
+              className="text-xs sm:text-sm px-2 py-2"
+            >
+              Key embedding
             </TabsTrigger>
-            <TabsTrigger value="configAI">
-              Cấu hình key phản hồi từ bot
+            <TabsTrigger
+              value="configAI"
+              className="text-xs sm:text-sm px-2 py-2"
+            >
+              Key AI bot
             </TabsTrigger>
-            <TabsTrigger value="configPrompt">Cấu hình Prompt</TabsTrigger>
-            <TabsTrigger value="configInfo">Thông tin chatbot</TabsTrigger>
+            <TabsTrigger
+              value="configPrompt"
+              className="text-xs sm:text-sm px-2 py-2"
+            >
+              Prompt
+            </TabsTrigger>
+            <TabsTrigger
+              value="configInfo"
+              className="text-xs sm:text-sm px-2 py-2"
+            >
+              Thông tin bot
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="configEmbedding">
             <Card>
@@ -423,7 +421,7 @@ export function SettingsTabs() {
                       {aiKeys.map((keyItem, index) => (
                         <div
                           key={keyItem.id}
-                          className="flex items-center gap-2"
+                          className="flex flex-col sm:flex-row sm:items-center gap-2"
                         >
                           <div className="flex-1 grid gap-1.5">
                             <Label
@@ -446,7 +444,7 @@ export function SettingsTabs() {
                               type="button"
                               variant="ghost"
                               size="icon"
-                              className="mt-5 text-red-500 hover:text-red-700"
+                              className="self-end sm:mt-5 text-red-500 hover:text-red-700"
                               onClick={() => handleDeleteKeyClick(keyItem.id)}
                               aria-label="Xóa key"
                               disabled={loading}
@@ -462,7 +460,7 @@ export function SettingsTabs() {
                   <Button
                     variant="outline"
                     onClick={addAiKeyInput}
-                    className="w-fit"
+                    className="w-full sm:w-fit"
                   >
                     <PlusCircle className="mr-2 h-4 w-4" />
                     {aiKeys.length === 0 ? "Thêm key" : "Thêm key khác"}
@@ -591,21 +589,22 @@ export function SettingsTabs() {
           setDeleteDialog({ isOpen: open, keyId: null, keyIndex: 0 })
         }
       >
-        <DialogContent>
+        <DialogContent className="max-w-sm sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Xác nhận xóa key</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               Bạn có chắc chắn muốn xóa Key {deleteDialog.keyIndex}? Hành động
               này không thể hoàn tác.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <Button
               variant="outline"
               onClick={() =>
                 setDeleteDialog({ isOpen: false, keyId: null, keyIndex: 0 })
               }
               disabled={loading}
+              className="w-full sm:w-auto"
             >
               Hủy
             </Button>
@@ -613,6 +612,7 @@ export function SettingsTabs() {
               variant="destructive"
               onClick={confirmDeleteKey}
               disabled={loading}
+              className="w-full sm:w-auto"
             >
               {loading ? (
                 <>

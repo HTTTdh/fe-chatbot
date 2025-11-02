@@ -1,5 +1,3 @@
-// src/components/pages/DashboardPage.jsx
-
 import {
   Card,
   CardContent,
@@ -11,7 +9,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Users, MessageSquare, Network, Activity } from "lucide-react";
 
-// Mock data cho danh sách hoạt động
 const recentActivities = [
   {
     id: 1,
@@ -38,11 +35,12 @@ const recentActivities = [
 
 export default function DashboardPage() {
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+    <div className="flex-1 space-y-4 p-4 sm:p-6 lg:p-8 pt-4 sm:pt-6">
+      <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+        Dashboard
+      </h2>
 
-      {/* 4 thẻ KPI */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -95,7 +93,6 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Hoạt động gần đây */}
       <Card>
         <CardHeader>
           <CardTitle>Hoạt động gần đây</CardTitle>
@@ -105,24 +102,32 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {recentActivities.map((activity) => (
-            <div key={activity.id} className="flex items-center">
-              <Avatar className="h-9 w-9">
-                <AvatarImage src={`/avatars/${activity.id}.png`} alt="Avatar" />
-                <AvatarFallback>{activity.user.fallback}</AvatarFallback>
-              </Avatar>
-              <div className="ml-4 space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {activity.user.name}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {activity.action}
-                </p>
+            <div
+              key={activity.id}
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0"
+            >
+              <div className="flex items-center">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage
+                    src={`/avatars/${activity.id}.png`}
+                    alt="Avatar"
+                  />
+                  <AvatarFallback>{activity.user.fallback}</AvatarFallback>
+                </Avatar>
+                <div className="ml-4 space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {activity.user.name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {activity.action}
+                  </p>
+                </div>
               </div>
-              <div className="ml-auto font-medium">
+              <div className="flex items-center gap-2 ml-auto sm:ml-4">
                 <Badge variant="outline">{activity.channel}</Badge>
-              </div>
-              <div className="ml-4 text-sm text-muted-foreground">
-                {activity.time}
+                <div className="text-sm text-muted-foreground">
+                  {activity.time}
+                </div>
               </div>
             </div>
           ))}

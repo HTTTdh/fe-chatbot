@@ -1,4 +1,3 @@
-// src/components/knowledge-base/KnowledgeBaseItem.tsx
 import { Button } from "@/components/ui/button";
 import {
   Item,
@@ -30,7 +29,6 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-// Bỏ Input vì không dùng
 import { useKnowledgeBase } from "@/hooks/useKnowledgeBase";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -44,7 +42,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { Textarea } from "../ui/textarea"; // Thêm lại Textarea
+import { Textarea } from "../ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -86,7 +84,6 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
     setIsDeleteDialogOpen(false);
   };
 
-  // 4. Reset form khi mở dialog
   const handleEditClick = () => {
     form.reset({
       raw_content: item.raw_content || "",
@@ -94,7 +91,6 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
     setIsEditDialogOpen(true);
   };
 
-  // 5. Xử lý logic submit cho 'raw_content'
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await updateItem({
@@ -111,29 +107,37 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
 
   return (
     <>
-      <Item variant="outline" className="p-4">
-        <FileText className="h-6 w-6 text-muted-foreground" />
-        <ItemContent className="ml-4">
-          <div className="flex items-center gap-2">
-            <ItemTitle>{item.file_name}</ItemTitle>
-            {/* Logic badge này dùng để xác định loại item */}
-            <Badge variant={item.file_type !== null ? "secondary" : "outline"}>
+      <Item variant="outline" className="p-3 sm:p-4">
+        <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground shrink-0" />
+        <ItemContent className="ml-3 sm:ml-4 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+            <ItemTitle className="truncate text-sm sm:text-base">
+              {item.file_name}
+            </ItemTitle>
+            <Badge
+              variant={item.file_type !== null ? "secondary" : "outline"}
+              className="text-xs w-fit"
+            >
               {item.file_type !== null ? item.file_type : "Văn bản"}
             </Badge>
           </div>
-          <ItemDescription>
+          <ItemDescription className="text-xs sm:text-sm">
             Tạo lúc: {formatDateTime(item.created_at)}
           </ItemDescription>
         </ItemContent>
-        <ItemActions>
+        <ItemActions className="shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={isDeleting}>
+              <Button
+                variant="ghost"
+                size="icon"
+                disabled={isDeleting}
+                className="h-8 w-8 sm:h-10 sm:w-10"
+              >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {/* 6. CHỈ HIỂN THỊ "Chỉnh sửa" nếu là "Văn bản" (file_type == null) */}
+            <DropdownMenuContent align="end" className="w-48">
               {item.file_type === null && (
                 <DropdownMenuItem onClick={handleEditClick}>
                   <Pencil className="mr-2 h-4 w-4" />
@@ -141,7 +145,6 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
                 </DropdownMenuItem>
               )}
 
-              {/* Nút Xóa luôn hiển thị */}
               <DropdownMenuItem
                 onClick={handleDelete}
                 className="text-red-600"
@@ -159,9 +162,8 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
         </ItemActions>
       </Item>
 
-      {/* 7. Dialog Form này giờ chỉ dành cho "Văn bản" (Rich Text) */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-w-sm sm:max-w-md lg:max-w-lg max-h-[80vh] overflow-y-auto">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <DialogHeader>
@@ -172,17 +174,16 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
               </DialogHeader>
 
               <div className="grid gap-4 py-4">
-                {/* 8. Sửa FormField để dùng 'raw_content' với <Textarea> */}
                 <FormField
                   control={form.control}
                   name="raw_content"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nội dung (Rich Text)</FormLabel>
+                      <FormLabel>Nội dung</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Nhập nội dung văn bản..."
-                          className="min-h-[200px]"
+                          className="min-h-[150px] sm:min-h-[200px] resize-none"
                           {...field}
                           disabled={isUpdating}
                         />
@@ -193,13 +194,22 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
                 />
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
                 <DialogClose asChild>
-                  <Button type="button" variant="outline" disabled={isUpdating}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isUpdating}
+                    className="w-full sm:w-auto"
+                  >
                     Hủy
                   </Button>
                 </DialogClose>
-                <Button type="submit" disabled={isUpdating}>
+                <Button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="w-full sm:w-auto"
+                >
                   {isUpdating && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -211,19 +221,22 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog xác nhận xóa */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-sm sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Xác nhận xóa</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               Bạn có chắc chắn muốn xóa "{item.file_name}"? Hành động này không
               thể hoàn tác.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <DialogClose asChild>
-              <Button variant="outline" disabled={isDeleting}>
+              <Button
+                variant="outline"
+                disabled={isDeleting}
+                className="w-full sm:w-auto"
+              >
                 Hủy
               </Button>
             </DialogClose>
@@ -231,6 +244,7 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
               variant="destructive"
               onClick={confirmDelete}
               disabled={isDeleting}
+              className="w-full sm:w-auto"
             >
               {isDeleting ? (
                 <>
@@ -248,16 +262,15 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
   );
 }
 
-// Component Skeleton không thay đổi
 export const KnowledgeBaseItemSkeleton = () => {
   return (
-    <div className="flex items-center space-x-4 rounded-md border p-4">
-      <Skeleton className="h-6 w-6 rounded" />
-      <div className="flex-1 space-y-2">
-        <Skeleton className="h-4 w-3/5" />
-        <Skeleton className="h-4 w-4/5" />
+    <div className="flex items-center space-x-3 sm:space-x-4 rounded-md border p-3 sm:p-4">
+      <Skeleton className="h-5 w-5 sm:h-6 sm:w-6 rounded shrink-0" />
+      <div className="flex-1 space-y-2 min-w-0">
+        <Skeleton className="h-3 sm:h-4 w-3/5" />
+        <Skeleton className="h-3 sm:h-4 w-4/5" />
       </div>
-      <Skeleton className="h-8 w-8" />
+      <Skeleton className="h-8 w-8 sm:h-10 sm:w-10 rounded shrink-0" />
     </div>
   );
 };

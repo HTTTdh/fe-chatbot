@@ -8,7 +8,7 @@ const Navigate = () => {
     greeting = `Xin chào, ${user.full_name}`;
   }
   return (
-    <div className="relative w-full">
+    <div className="relative w-full hidden lg:block">
       <Navbar01 signInText={greeting} ctaText={user?.role} />
     </div>
   );

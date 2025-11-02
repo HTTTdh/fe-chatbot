@@ -23,17 +23,18 @@ export const DataChatbot = () => {
   const items = data?.details;
   const filteredData = Array.isArray(items)
     ? items.filter((item) =>
-        // Dùng 'file_name' vì cả 2 loại 'FILE' và 'RICH_TEXT' đều có
         item.source_type?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
-  return (
-    <div className="container mx-auto max-w-4xl py-8">
-      <h1 className="mb-6 text-3xl font-bold">Dữ liệu Chatbot</h1>
 
-      {/* Header: Search và Nút Add New */}
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div className="relative flex-1">
+  return (
+    <div className="container mx-auto max-w-4xl py-4 sm:py-6 lg:py-8 px-4 sm:px-6">
+      <h1 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold">
+        Dữ liệu Chatbot
+      </h1>
+
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Tìm kiếm dữ liệu..."
@@ -45,12 +46,12 @@ export const DataChatbot = () => {
 
         <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <PlusCircle className="mr-2 h-4 w-4" />
               Thêm dữ liệu
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="max-w-sm sm:max-w-md lg:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Thêm dữ liệu mới</DialogTitle>
             </DialogHeader>
@@ -59,8 +60,7 @@ export const DataChatbot = () => {
         </Dialog>
       </div>
 
-      {/* Danh sách dữ liệu */}
-      <div className="flex w-full flex-col gap-4">
+      <div className="flex w-full flex-col gap-3 sm:gap-4">
         {isLoadingData && (
           <>
             <KnowledgeBaseItemSkeleton />
@@ -73,13 +73,14 @@ export const DataChatbot = () => {
           filteredData &&
           filteredData.length > 0 &&
           filteredData.map((item) => (
-            // 'item' bây giờ là object từ mảng 'details'
             <KnowledgeBaseItem key={item.id} item={item} />
           ))}
 
         {!isLoadingData && (!filteredData || filteredData.length === 0) && (
-          <div className="flex h-40 flex-col items-center justify-center rounded-md border border-dashed">
-            <p className="text-muted-foreground">Không tìm thấy dữ liệu.</p>
+          <div className="flex h-32 sm:h-40 flex-col items-center justify-center rounded-md border border-dashed">
+            <p className="text-sm sm:text-base text-muted-foreground text-center px-4">
+              Không tìm thấy dữ liệu.
+            </p>
           </div>
         )}
       </div>
