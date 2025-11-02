@@ -32,10 +32,10 @@ jobs:
           rm -rf .git
           mkdir deploy
           # copy nguyên dist folder
-          cp -r Frontend/dist deploy/
+          cp -r my-project/dist deploy/
           # copy Dockerfile và nginx.conf
-          cp Frontend/Dockerfile deploy/
-          cp Frontend/nginx.conf deploy/
+          cp my-project/Dockerfile deploy/
+          cp my-project/nginx.conf deploy/
 
           cd deploy
           git init
