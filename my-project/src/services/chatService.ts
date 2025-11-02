@@ -2,7 +2,8 @@ import axiosClient from "@/config/axios";
 
 import type { MessageData } from "@/types/message";
 
-const VITE_URL_WS = import.meta.env.VITE_URL_WS || "ws://localhost:8000";
+const VITE_URL_WS =
+  import.meta.env.VITE_URL_WS || "wss://chatbot1022be.hasontech.com";
 
 type OnMessageCallback = (data: any) => void;
 
