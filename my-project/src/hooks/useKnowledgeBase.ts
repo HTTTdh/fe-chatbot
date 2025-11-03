@@ -25,6 +25,7 @@ export const useKnowledgeBase = () => {
     }: {
       kb_id: number;
       data: {
+        file_name: string;
         raw_content: string;
         customer_id: number;
         user_id: number;
@@ -64,6 +65,7 @@ export const useKnowledgeBase = () => {
     id: number;
     data: {
       raw_content: string;
+      file_name: string;
     };
   }
 
@@ -76,6 +78,7 @@ export const useKnowledgeBase = () => {
         raw_content: data.raw_content,
         customer_id: user.company_id,
         user_id: user.id,
+        file_name: data.file_name,
       };
 
       return updateRichTextKnowledgeBaseEndpoint(id, apiPayload);

@@ -43,6 +43,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -53,6 +54,7 @@ interface KnowledgeBaseItemProps {
 
 const formSchema = z.object({
   raw_content: z.string().min(1, "Nội dung là bắt buộc."),
+  file_name: z.string().optional(),
 });
 
 export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
@@ -64,6 +66,7 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       raw_content: item.raw_content || "",
+      file_name: item.file_name || "",
     },
   });
 
@@ -71,9 +74,10 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
     if (item.raw_content) {
       form.reset({
         raw_content: item.raw_content,
+        file_name: item.file_name || "",
       });
     }
-  }, [item.raw_content, form.reset]);
+  }, [item.raw_content, item.file_name, form.reset]);
 
   const handleDelete = () => {
     setIsDeleteDialogOpen(true);
@@ -87,6 +91,7 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
   const handleEditClick = () => {
     form.reset({
       raw_content: item.raw_content || "",
+      file_name: item.file_name || "",
     });
     setIsEditDialogOpen(true);
   };
@@ -97,6 +102,7 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
         id: item.id,
         data: {
           raw_content: values.raw_content,
+          file_name: values.file_name || item.file_name || "",
         },
       });
       setIsEditDialogOpen(false);
@@ -174,6 +180,23 @@ export function KnowledgeBaseItem({ item }: KnowledgeBaseItemProps) {
               </DialogHeader>
 
               <div className="grid gap-4 py-4">
+                <FormField
+                  control={form.control}
+                  name="file_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tên file</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Nhập tên file..."
+                          {...field}
+                          disabled={isUpdating}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="raw_content"

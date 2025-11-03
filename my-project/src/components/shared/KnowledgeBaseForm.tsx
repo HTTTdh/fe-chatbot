@@ -60,6 +60,7 @@ export function KnowledgeBaseForm({ onFinished }: KnowledgeBaseFormProps) {
         await createRichText({
           kb_id: 1,
           data: {
+            file_name: values.title,
             raw_content: values.raw_content,
             user_id: user_id ?? 0,
             customer_id: customer_id ?? 0,
@@ -75,7 +76,6 @@ export function KnowledgeBaseForm({ onFinished }: KnowledgeBaseFormProps) {
 
         const formData = new FormData();
         formData.append("kb_id", "1");
-        formData.append("title", values.title);
         formData.append("customer_id", String(customer_id)); // API của bạn nhận string
         formData.append("user_id", String(user_id));
 
@@ -126,9 +126,6 @@ export function KnowledgeBaseForm({ onFinished }: KnowledgeBaseFormProps) {
                 <FormItem>
                   <FormLabel>Nội dung (Rich Text)</FormLabel>
                   <FormControl>
-                    {/* ĐÂY LÀ CHỖ TÍCH HỢP RICH TEXT EDITOR (ví dụ: Tiptap, Quill)
-                      Tạm thời dùng Textarea
-                    */}
                     <Textarea
                       placeholder="Nhập nội dung văn bản..."
                       className="min-h-[200px]"

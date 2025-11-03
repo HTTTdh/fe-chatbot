@@ -33,6 +33,7 @@ export const updateFilesKnowledgeBaseEndpoint = async (
 export const updateRichTextKnowledgeBaseEndpoint = async (
   detail_id: number,
   data: {
+    file_name: string;
     raw_content: string;
     customer_id: number;
     user_id: number;
@@ -53,6 +54,7 @@ export const deleteKnowledgeBaseDetailEndpoint = async (detail_id: number) => {
 export const addRichTextToKnowledgeBaseEndpoint = async (
   kb_id: number,
   data: {
+    file_name: string;
     raw_content: string;
     customer_id: number;
     user_id: number;

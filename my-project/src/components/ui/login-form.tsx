@@ -24,7 +24,8 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await loginUser(username, password); // ✅ gọi đúng hàm loginUser
+      await loginUser(username, password);
+      console.log(user);
       toast.success(`Xin chào, ${user?.full_name || username}!`);
       navigate("/trang-chu"); // ✅ chuyển về trang chính
     } catch (err) {
