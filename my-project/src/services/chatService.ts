@@ -2,8 +2,7 @@ import axiosClient from "@/config/axios";
 
 import type { MessageData } from "@/types/message";
 
-const VITE_URL_WS =
-  import.meta.env.VITE_URL_WS || "wss://chatbot1022be.hasontech.com";
+const VITE_URL_WS = import.meta.env.VITE_URL_WS || "ws://localhost:8000";
 
 type OnMessageCallback = (data: any) => void;
 
@@ -225,23 +224,10 @@ export const count_message_by_channel = async (): Promise<any> => {
   }
 };
 
-// Lấy toàn bộ lịch sử (cho admin)
-// Removed duplicate declaration of getAllChatHistory
-
 // Cập nhật trạng thái phiên chat
 export const updateStatus = async (id: string, data: any): Promise<any> => {
   try {
     const response = await axiosClient.patch(`/chat/${id}`, data);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// Cập nhật tag
-export const updateTag = async (id: string, data: any): Promise<any> => {
-  try {
-    const response = await axiosClient.patch(`/chat/tag/${id}`, data);
     return response;
   } catch (error) {
     throw error;
