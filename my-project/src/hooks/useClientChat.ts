@@ -2,23 +2,42 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import {
   connectCustomerSocket,
   disconnectCustomer,
-  createSession, // Giả định hàm này tồn tại
-  checkSession, // Giả định hàm này tồn tại và trả về boolean
+  createSession,
+  checkSession,
   getChatHistory,
   sendMessage,
-} from "@/services/chatService"; // Đảm bảo đường dẫn này đúng
+} from "@/services/chatService";
 import type { MessageData } from "@/types/message";
+import { useLLM } from "./useLLM";
 
 export const useClientChat = () => {
   // --- State ---
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Loading lịch sử
-  const [isConnecting, setIsConnecting] = useState(true); // Đang kết nối/khởi tạo session
+  const [isLoading, setIsLoading] = useState(true);
+  const [isConnecting, setIsConnecting] = useState(true);
+
+  // --- Hooks ---
+  const { llmConfig } = useLLM();
 
   // --- Ref ---
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Helper function để tạo tin nhắn chào mặc định
+  const createSystemGreetingMessage = useCallback(
+    (greeting: string): MessageData => {
+      return {
+        id: `greeting-${Date.now()}`,
+        content: greeting,
+        sender_type: "bot",
+        created_at: new Date().toISOString(),
+        chat_session_id: sessionId || "",
+        image: null,
+      };
+    },
+    [sessionId]
+  );
 
   // --- Helper ---
   const scrollToBottom = useCallback(() => {
@@ -59,7 +78,7 @@ export const useClientChat = () => {
         // Tải lịch sử chat
         setIsLoading(true);
         const history = await getChatHistory(currentSessionId);
-        setMessages(history); // Sửa: getChatHistory đã trả về MessageData[] trực tiếp
+        setMessages(history);
         setIsLoading(false);
 
         // Định nghĩa hàm callback khi có tin nhắn mới
@@ -86,6 +105,27 @@ export const useClientChat = () => {
       disconnectCustomer();
     };
   }, []); // Chỉ chạy 1 lần khi component mount
+
+  // Effect (3): Thêm system greeting khi LLM config load xong và session mới
+  useEffect(() => {
+    if (
+      llmConfig?.system_greeting &&
+      sessionId &&
+      !isLoading &&
+      messages.length === 0
+    ) {
+      const greetingMessage = createSystemGreetingMessage(
+        llmConfig.system_greeting
+      );
+      setMessages([greetingMessage]);
+    }
+  }, [
+    llmConfig,
+    sessionId,
+    isLoading,
+    messages.length,
+    createSystemGreetingMessage,
+  ]);
 
   // Xử lý gửi tin nhắn
   const handleSendMessage = useCallback(() => {

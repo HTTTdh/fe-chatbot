@@ -344,9 +344,13 @@ export const SupportPanel: React.FC = () => {
 
 type ChatHeaderProps = {
   isConnecting: boolean;
+  botName?: string;
 };
 
-export const ChatHeader: React.FC<ChatHeaderProps> = ({ isConnecting }) => {
+export const ChatHeader: React.FC<ChatHeaderProps> = ({
+  isConnecting,
+  botName,
+}) => {
   return (
     <div className="flex h-14 items-center gap-3 border-b px-4">
       <Avatar>
@@ -355,7 +359,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ isConnecting }) => {
         </AvatarFallback>
       </Avatar>
       <div>
-        <h2 className="text-lg font-semibold">Hỗ trợ Dịch vụ công</h2>
+        <h2 className="text-lg font-semibold">
+          {botName || "Hỗ trợ Dịch vụ công"}
+        </h2>
         <span className="text-sm text-muted-foreground">
           {isConnecting ? "Đang kết nối..." : "Trạng thái: Đang hoạt động"}
         </span>
