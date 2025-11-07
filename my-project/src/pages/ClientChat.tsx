@@ -4,6 +4,7 @@ import {
   MessageItem,
 } from "@/components/shared/ClientChatUI";
 import { useClientChat } from "@/hooks/useClientChat";
+import { useLLM } from "@/hooks/useLLM";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Separator } from "@radix-ui/react-separator";
 import { Loader2 } from "lucide-react";
@@ -22,9 +23,12 @@ const ClientChat = () => {
     messagesEndRef,
   } = useClientChat();
 
+  // Lấy thông tin LLM config để hiển thị botName
+  const { llmConfig } = useLLM();
+
   return (
     <div className="flex h-full flex-col">
-      <ChatHeader isConnecting={isConnecting} />
+      <ChatHeader isConnecting={isConnecting} botName={llmConfig?.botName} />
 
       {/* Khu vực hiển thị tin nhắn */}
       <ScrollArea className="flex-1 p-4">
