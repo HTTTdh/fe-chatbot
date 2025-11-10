@@ -8,6 +8,7 @@ import {
   BookAlert,
   ChartBar,
   LogOut,
+  FolderKanban,
 } from "lucide-react";
 import {
   Sidebar,
@@ -59,6 +60,12 @@ const items = [
     title: "Dữ liệu Chatbot",
     icon: BookUser,
     url: "/du-lieu-chatbot",
+    roles: ["root", "superadmin", "admin"], // root, superadmin, admin
+  },
+  {
+    title: "Quản lý danh mục",
+    icon: FolderKanban,
+    url: "/quan-ly-danh-muc",
     roles: ["root", "superadmin", "admin"], // root, superadmin, admin
   },
   {

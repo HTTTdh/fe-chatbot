@@ -70,17 +70,19 @@ export function FacebookPageItem({ item, onEdit }: FacebookPageItemProps) {
                         <div className="flex gap-2 flex-wrap">
                             <Badge
                                 variant="default"
-                                className={`text-xs w-fit ${
-                                    item.is_active ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-                                }`}
+                                className={`text-xs w-fit ${item.is_active ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+                                    }`}
                             >
                                 {item.is_active ? "Đang hoạt động" : "Tắt"}
                             </Badge>
                         </div>
                     </div>
                     <ItemDescription className="text-xs sm:text-sm space-y-1">
-                        <div className="flex flex-col sm:flex-row sm:gap-4">
-                            <span><span className="font-semibold text-foreground">Page ID:</span> {item.page_id}</span>
+                        <div className="flex flex-col gap-2">
+                            <div>
+                                <span className="font-semibold text-foreground">Page ID:</span>
+                                <span className="break-all">{item.page_id}</span>
+                            </div>
                             {item.url && (
                                 <div className="flex gap-1">
                                     <span className="font-semibold text-foreground">URL:</span>
@@ -95,6 +97,7 @@ export function FacebookPageItem({ item, onEdit }: FacebookPageItemProps) {
                                 </div>
                             )}
                         </div>
+
                         {item.description && (
                             <p className="text-muted-foreground">
                                 <span className="font-semibold text-foreground">Mô tả:</span> {item.description}

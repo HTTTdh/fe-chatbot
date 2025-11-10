@@ -3,19 +3,27 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
     getAllKnowledgeBaseEndpoint,
+    getAllCategoriesEndpoint,
     createFilesKnowledgeBaseEndpoint,
     deleteKnowledgeBaseDetailEndpoint,
     addRichTextToKnowledgeBaseEndpoint,
     updateRichTextKnowledgeBaseEndpoint,
 } from "@/services/knowledgeService";
-import type { KnowledgeBaseResponse } from "@/types/knowledge";
+import type { KnowledgeBaseResponse, KnowledgeCategory } from "@/types/knowledge";
 import { useAuth } from "@/components/context/AuthContext";
-export const useKnowledgeBase = () => {
+
+export const useKnowledgeBase = (categoryIds?: number[]) => {
     const queryClient = useQueryClient();
-    const { user } = useAuth(); // Giả sử bạn có hook useAuth để lấy thông tin user
-    const { data, isLoading: isLoadingData } = useQuery<KnowledgeBaseResponse>({
-        queryKey: ["knowledgeBase"],
-        queryFn: getAllKnowledgeBaseEndpoint,
+    const { user } = useAuth();
+
+    const { data, isLoading: isLoadingData } = useQuery<KnowledgeBaseResponse[]>({
+        queryKey: ["knowledgeBase", categoryIds],
+        queryFn: () => getAllKnowledgeBaseEndpoint(categoryIds),
+    });
+
+    const { data: categories, isLoading: isLoadingCategories } = useQuery<KnowledgeCategory[]>({
+        queryKey: ["knowledgeCategories"],
+        queryFn: getAllCategoriesEndpoint,
     });
 
     const createRichTextMutation = useMutation({
@@ -27,8 +35,8 @@ export const useKnowledgeBase = () => {
             data: {
                 file_name: string;
                 raw_content: string;
-                customer_id: number;
                 user_id: number;
+                category_id: number;
             };
         }) => addRichTextToKnowledgeBaseEndpoint(kb_id, data),
         onSuccess: () => {
@@ -71,12 +79,11 @@ export const useKnowledgeBase = () => {
 
     const updateItemMutation = useMutation({
         mutationFn: async ({ id, data }: UpdateItemVariables) => {
-            if (!user || !user.company_id || !user.id) {
+            if (!user || !user.id) {
                 throw new Error("Không tìm thấy thông tin người dùng.");
             }
             const apiPayload = {
                 raw_content: data.raw_content,
-                customer_id: user.company_id,
                 user_id: user.id,
                 file_name: data.file_name,
             };
@@ -94,6 +101,8 @@ export const useKnowledgeBase = () => {
     });
     return {
         data,
+        categories,
+        isLoadingCategories,
         updateItem: updateItemMutation.mutateAsync,
         isUpdating: updateItemMutation.isPending,
         isLoadingData,

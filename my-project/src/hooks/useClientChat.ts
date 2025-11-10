@@ -64,8 +64,16 @@ export const useClientChat = () => {
 
                 // Định nghĩa hàm callback khi có tin nhắn mới
                 const handleNewMessage = (data: MessageData) => {
+                    console.log("Tin nhắn mới nhận được:", data);
+                    // Normalize dữ liệu - đảm bảo created_at luôn có giá trị hợp lệ
+                    const normalizedMessage: MessageData = {
+                        ...data,
+                        created_at: data.created_at || new Date().toISOString(),
+                        id: data.id || `msg-${Date.now()}`,
+                    };
+                    console.log("Tin nhắn sau khi normalize:", normalizedMessage);
                     // Cập nhật state tin nhắn
-                    setMessages((prevMessages) => [...prevMessages, data]);
+                    setMessages((prevMessages) => [...prevMessages, normalizedMessage]);
                 };
 
                 // Kết nối WebSocket

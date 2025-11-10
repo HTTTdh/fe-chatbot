@@ -61,11 +61,15 @@ export const API_ENDPOINT = {
     KNOWLEDGE_BASE: {
         GET_ALL: "/knowledge-base/",
         SEARCH: "/knowledge-base/search",
-        CREATE_RICH_TEXT: "/knowledge-base/rich-text",
-        CREATE_FILES: "/knowledge-base/upload-files",
-        UPDATE_FILES(kb_id: number) {
-            return `/knowledge-base/update-files/${kb_id}`;
+        GET_CATEGORIES: "/knowledge-base/categories",
+        CREATE_CATEGORY: "/knowledge-base/categories",
+        UPDATE_CATEGORY(category_id: number) {
+            return `/knowledge-base/categories/${category_id}`;
         },
+        DELETE_CATEGORY(category_id: number) {
+            return `/knowledge-base/categories/${category_id}`;
+        },
+        CREATE_FILES: "/knowledge-base/upload-files",
         UPDATE_RICH_TEXT(detail_id: number) {
             return `/knowledge-base/rich-text/${detail_id}`;
         },

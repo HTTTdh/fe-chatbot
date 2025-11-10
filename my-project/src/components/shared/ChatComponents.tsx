@@ -12,31 +12,46 @@ import { UserCircle2, Bot } from "lucide-react";
 
 export const formatTime = (isoString: string) => {
     try {
-        return new Date(isoString).toLocaleTimeString("vi-VN", {
+        if (!isoString) return "vừa xong";
+        const date = new Date(isoString);
+        // Kiểm tra nếu date không hợp lệ
+        if (isNaN(date.getTime())) {
+            return "vừa xong";
+        }
+        return date.toLocaleTimeString("vi-VN", {
             hour: "2-digit",
             minute: "2-digit",
         });
     } catch (e) {
-        return "";
+        return "vừa xong";
     }
 };
 
 export const formatTimeAgo = (isoString: string) => {
-    const now = new Date();
-    const date = new Date(isoString);
-    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    try {
+        if (!isoString) return "Vừa xong";
+        const now = new Date();
+        const date = new Date(isoString);
+        // Kiểm tra nếu date không hợp lệ
+        if (isNaN(date.getTime())) {
+            return "Vừa xong";
+        }
+        const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    let interval = seconds / 31536000;
-    if (interval > 1) return Math.floor(interval) + " năm trước";
-    interval = seconds / 2592000;
-    if (interval > 1) return Math.floor(interval) + " tháng trước";
-    interval = seconds / 86400;
-    if (interval > 1) return Math.floor(interval) + " ngày trước";
-    interval = seconds / 3600;
-    if (interval > 1) return Math.floor(interval) + " giờ trước";
-    interval = seconds / 60;
-    if (interval > 1) return Math.floor(interval) + " phút trước";
-    return "Vừa xong";
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " năm trước";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " tháng trước";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " ngày trước";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " giờ trước";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " phút trước";
+        return "Vừa xong";
+    } catch (e) {
+        return "Vừa xong";
+    }
 };
 
 // --- COMPONENT CON: SESSION ITEM ---

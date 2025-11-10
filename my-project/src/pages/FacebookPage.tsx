@@ -8,19 +8,21 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { PlusCircle, Search } from "lucide-react";
+import { PlusCircle, Search, Edit } from "lucide-react";
 import { useFacebookPages } from "@/hooks/useFacebookPages";
 import {
     FacebookPageItem,
     FacebookPageItemSkeleton,
 } from "@/components/shared/FacebookPageItem";
 import { FacebookPageForm } from "@/components/shared/FacebookPageForm";
+import LoginWithFb from "@/components/shared/LoginWithFb";
 import type { FacebookPage as FacebookPageType } from "@/types/facebook";
 
 export const FacebookPage = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [editData, setEditData] = useState<FacebookPageType | null>(null);
+    const [showMethodSelection, setShowMethodSelection] = useState(false);
     const { data, isLoadingPages } = useFacebookPages();
 
     // Filter pages theo search term
@@ -35,17 +37,24 @@ export const FacebookPage = () => {
 
     const handleOpenAddDialog = () => {
         setEditData(null);
+        setShowMethodSelection(true);
         setOpenDialog(true);
     };
 
     const handleOpenEditDialog = (item: FacebookPageType) => {
         setEditData(item);
+        setShowMethodSelection(false);
         setOpenDialog(true);
     };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
         setEditData(null);
+        setShowMethodSelection(false);
+    };
+
+    const handleManualEntry = () => {
+        setShowMethodSelection(false);
     };
 
     return (
@@ -78,10 +87,33 @@ export const FacebookPage = () => {
                                 {editData ? "Chỉnh sửa Facebook Page" : "Thêm Facebook Page mới"}
                             </DialogTitle>
                         </DialogHeader>
-                        <FacebookPageForm
-                            onFinished={handleCloseDialog}
-                            editData={editData}
-                        />
+
+                        {!editData && showMethodSelection ? (
+                            <div className="space-y-4 py-4">
+                                <p className="text-sm text-muted-foreground text-center mb-6">
+                                    Chọn phương thức thêm Facebook Page
+                                </p>
+                                <div className="grid gap-4">
+                                    <Button
+                                        variant="outline"
+                                        className="h-auto py-6 flex flex-col items-center gap-2"
+                                        onClick={handleManualEntry}
+                                    >
+                                        <Edit className="h-6 w-6" />
+                                        <span className="font-semibold">Nhập thủ công</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            Nhập thông tin Page và Access Token thủ công
+                                        </span>
+                                    </Button>
+                                    <LoginWithFb />
+                                </div>
+                            </div>
+                        ) : (
+                            <FacebookPageForm
+                                onFinished={handleCloseDialog}
+                                editData={editData}
+                            />
+                        )}
                     </DialogContent>
                 </Dialog>
             </div>

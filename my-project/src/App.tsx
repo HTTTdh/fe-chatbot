@@ -17,6 +17,7 @@ import ActivityLogPage from "./pages/ActivityLogPage";
 import UserGuidePage from "./pages/UserGuidePage";
 import GuestPage from "./pages/GuestPage";
 import ChartManagement from "./pages/ChartManagement";
+import CategoryPage from "./pages/CategoryPage";
 import { ProtectedRoute } from "./components/shared/ProtectedRoute";
 import { useState } from "react";
 
@@ -81,6 +82,16 @@ function App() {
               element={
                 <ProtectedRoute requiredRoles={["root", "superadmin", "admin"]}>
                   <DataChatbot />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Quản lý danh mục - root, superadmin, admin */}
+            <Route
+              path="/quan-ly-danh-muc"
+              element={
+                <ProtectedRoute requiredRoles={["root", "superadmin", "admin"]}>
+                  <CategoryPage />
                 </ProtectedRoute>
               }
             />
